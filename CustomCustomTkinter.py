@@ -14,11 +14,18 @@ class App(ctk.CTk):
         self.navbar_image = None
         self.navbar_title = None
 
-    def place_navbars(self):
+    def add_page(self, page):
+        self.page_list.append(page)
+        self.on_page_list_change()
+
+    def on_page_list_change(self):
         for page in self.page_list:
-            page.navbar = Navbar(page, self.navbar_title, self.navbar_image)
-            if page.has_navbar:
-                page.navbar.populate_navbar(self.page_list)
+            page.refresh_navbar()
+
+    def show_page(self, identifier: str):
+        for page in self.page_list:
+            if page.identifier == identifier:
+                page.lift()
 
 class Custom_Page():
     """
@@ -31,18 +38,19 @@ class Custom_Page():
         self.has_navbar = has_navbar
         self.has_sidebar = has_sidebar
         self.navbar_name = navbar_name if navbar_name else identifier
+        self.navbar = None
 
         self.column_offset = 1 if self.has_sidebar else 0
         self.row_offset = 1 if self.has_navbar else 0
 
-        self.winfo_toplevel().page_list.append(self)
+        self.master.add_page(self)
 
         self.place(relx=0.5, rely=0.5, anchor="center" ,relwidth = 1, relheight = 1)
+        if has_navbar:
+            self.grid_columnconfigure(0, weight = 1)
+            self.refresh_navbar()
     
     def initialize_sidebar(self, sub_pages: list):
-        pass
-
-    def initialize_navbar(self, page_list: list):
         pass
 
     def add_widget(self, widget, **kwargs):
@@ -52,18 +60,18 @@ class Custom_Page():
         row = kwargs.pop("row") + self.row_offset
         column = kwargs.pop("column") + self.column_offset
         widget.grid(row = row, column = column, **kwargs)
+        self.refresh_navbar()
 
     def remove_widget(self, widget):
         if widget.master != self:
             raise("Widget does not belong to this page")
-        
         widget.grid_remove()
-    
-    def show(self, identifier: str):
-        print("Showing" + self.identifier)
-        for page in self.master.page_list:
-            if page.identifier == identifier:
-                page.lift()
+
+    def refresh_navbar(self):
+        if self.has_navbar:
+            if not self.navbar:
+                self.navbar = Navbar(self, self.master.navbar_title, self.master.navbar_image)
+            self.navbar.populate_navbar(self.master.page_list)
 
 
 class Page(Custom_Page, ctk.CTkFrame):
@@ -83,7 +91,7 @@ class Navbar(ctk.CTkFrame):
     
     def place_navbar(self):
         master_columns = self.master.grid_size()[0]
-        self.grid(row=0, column=0, columnspan=master_columns, sticky = "ew")
+        self.grid(row=0, column=0, columnspan=max(master_columns,1), sticky = "ew")
     
     def populate_navbar(self, page_list):
         if self.title is not None:
@@ -102,7 +110,7 @@ class Navbar(ctk.CTkFrame):
             if page.has_navbar is True or page.navbar_name is not None:
                 #f frame needs to be used due to a binding issue taking the value of the wrong iteration of frame.
                 p = page.identifier
-                self.buttons.append(ctk.CTkButton(self, text=page.navbar_name, height=30, corner_radius=0, command=lambda p=p: page.show(p)))
+                self.buttons.append(ctk.CTkButton(self, text=page.navbar_name, height=30, corner_radius=0, command=lambda p=p: self.master.master.show_page(p)))
                 self.buttons[count].grid(column=count+2, row=0, sticky="nsew")
                 self.grid_columnconfigure(count+2, weight=1)
                 count +=1
