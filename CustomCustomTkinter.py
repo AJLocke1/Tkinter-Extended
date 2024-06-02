@@ -14,6 +14,9 @@ class App(ctk.CTk):
         self.navbar_image = None
         self.navbar_title = None
 
+        self.theme_highlight_color = ['gray81', 'gray20']
+        self.theme_dampend_highlight_color = ['#36719F', '#144870']
+
     def add_page(self, page):
         self.page_list.append(page)
         self.on_page_list_change()
@@ -24,6 +27,10 @@ class App(ctk.CTk):
 
     def show_page(self, identifier: str):
         for page in self.page_list:
+            for button in page.navbar.buttons:
+                if getattr(button, "_text") == page.navbar_name:
+                    button.configure(bg_color = self.theme_dampend_highlight_color)
+                button.configure(bg_color = self.theme_highlight_color)
             if page.identifier == identifier:
                 page.lift()
 
@@ -32,18 +39,20 @@ class Custom_Page():
     A better option for applications with multiple pages. Must use the grid manager.
     initialize the navbar in the application class after all pages are initialized.
     """
-    def __init__(self, *args, identifier: str, has_navbar: bool, has_sidebar: bool, navbar_name: str = None, **kwargs):
+    def __init__(self, *args, identifier: str, has_navbar: bool, has_sidebar: bool, navbar_name: str = None, expand_navbar = True, centre_navbar = True, autogen_sidebar = True, **kwargs):
         super().__init__(*args, **kwargs)
         self.identifier = identifier
         self.has_navbar = has_navbar
         self.has_sidebar = has_sidebar
         self.navbar_name = navbar_name if navbar_name else identifier
+        self.expand_navbar = expand_navbar
+        self.centre_navbar = centre_navbar
         self.navbar = None
 
         self.column_offset = 1 if self.has_sidebar else 0
         self.row_offset = 1 if self.has_navbar else 0
 
-        self.master.add_page(self)
+        self.winfo_toplevel().add_page(self)
 
         self.place(relx=0.5, rely=0.5, anchor="center" ,relwidth = 1, relheight = 1)
         if has_navbar:
@@ -70,8 +79,8 @@ class Custom_Page():
     def refresh_navbar(self):
         if self.has_navbar:
             if not self.navbar:
-                self.navbar = Navbar(self, self.master.navbar_title, self.master.navbar_image)
-            self.navbar.populate_navbar(self.master.page_list)
+                self.navbar = Navbar(self, self.winfo_toplevel().navbar_title, self.winfo_toplevel().navbar_image, self.expand_navbar, self.centre_navbar)
+            self.navbar.populate_navbar(self.winfo_toplevel().page_list)
 
 
 class Page(Custom_Page, ctk.CTkFrame):
@@ -80,19 +89,26 @@ class Page(Custom_Page, ctk.CTkFrame):
 class Scrollable_Page(Custom_Page, ctk.CTkScrollableFrame):
     pass
 
-
 class Navbar(ctk.CTkFrame):
-    def __init__(self, master, title = None, image = None):
+    def __init__(self, master, title = None, image = None, expand = True, centered = True):
         super().__init__(master, border_width=1)
         self.title = title
         self.image = image
         self.master = master
+        self.expand = expand
+        self.centered = centered
         self.place_navbar()
     
     def place_navbar(self):
         master_columns = self.master.grid_size()[0]
-        self.grid(row=0, column=0, columnspan=max(master_columns,1), sticky = "ew")
-    
+        if self.expand:
+            self.grid(row=0, column=0, columnspan=max(master_columns,1), sticky = "ew")
+        else:
+            if self.centered:
+                self.grid(row=0, column=0, columnspan=max(master_columns,1))
+            else:
+                self.grid(row=0, column=0, columnspan=max(master_columns,1), sticky = "w")
+            
     def populate_navbar(self, page_list):
         if self.title is not None:
             self.label = ctk.CTkButton(self,text=self.title, height=30, corner_radius=0, hover = False)
@@ -110,12 +126,13 @@ class Navbar(ctk.CTkFrame):
             if page.has_navbar is True or page.navbar_name is not None:
                 #f frame needs to be used due to a binding issue taking the value of the wrong iteration of frame.
                 p = page.identifier
-                self.buttons.append(ctk.CTkButton(self, text=page.navbar_name, height=30, corner_radius=0, command=lambda p=p: self.master.master.show_page(p)))
+                self.button = ctk.CTkButton(self, text=page.navbar_name, height=30, corner_radius=0, border_spacing=0, command=lambda p=p: self.winfo_toplevel().show_page(p))
+                if page.navbar_name == self.master.navbar_name:
+                    self.button.configure(fg_color = self.winfo_toplevel().theme_dampend_highlight_color) 
+                self.buttons.append(self.button)
                 self.buttons[count].grid(column=count+2, row=0, sticky="nsew")
                 self.grid_columnconfigure(count+2, weight=1)
                 count +=1
-
-
 class CustomLabel(ctk.CTkLabel):
     """
     A Tkinter Label with wrapping capabilities.
