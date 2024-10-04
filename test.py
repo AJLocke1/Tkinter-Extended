@@ -18,7 +18,7 @@ class App(ctk.CTk):
         self.page2 = ctk.CTkFrame(self.stack, width=300, bg_color="green")
 
         self.stack.add_widget(self.page1, "page1")
-        self.stack.add_widget(self.page2, "page1")
+        self.stack.add_widget(self.page2, "page2")
 
         self.page1_button = ctk.CTkButton(self, text="page 1", command=lambda: self.stack.set_visible_child(self.page1))
         self.page1_button.grid(row=2, column=0)
