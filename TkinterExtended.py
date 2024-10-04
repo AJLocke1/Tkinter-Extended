@@ -22,6 +22,13 @@ class Stack(STACKBASE):
         """
         adds a widget to the stack
         """
+        if name is not None:
+            for child in self.children_list:
+                if child["name"] == name:
+                    widget = child["widget"]
+                    name = child["name"]
+                    raise DuplicateNameError(widget, name)
+
         widget.grid(row = 0, column = 0, sticky = "nsew")
         widget.grid_remove()
         self.children_list.append({"widget": widget, "name": name})
@@ -101,5 +108,13 @@ class NotInStackError(Exception):
     def __init__(self, widget):
         self.widget = widget
         self.message = f"Widget: {widget} is not appart of the stack"
+    def __str__(self):
+        return self.message
+    
+class DuplicateNameError(Exception):
+    def __init__(self, widget, name):
+        self.widget = widget
+        self.name = name
+        self.message = f"Widget in stack: {widget} already has the name {name}. please choose a unique name"
     def __str__(self):
         return self.message
