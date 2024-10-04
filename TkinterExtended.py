@@ -108,6 +108,35 @@ class Stack(STACKBASE):
         """ 
         return self.visible_child
     
+    def get_stack_size(self) -> int:
+        """
+        gets the size of the stack.
+        """
+        pass
+
+    def is_widget_in_stack(self, widget) -> bool:
+        """
+        checks if a widget is in the stack.
+        """
+        pass
+
+    def get_stack_state(self) -> int:
+        """
+        gets the index of the current widget set to be visible.
+        allows user to save the state of the stack.
+        """
+
+    def load_stack_state(self, int):
+        """
+        sets the widget with the given index to be visible.
+        allows the user to load a saved state of the stack.
+        """
+
+    def clear_stack(self):
+        """
+        removes all widgets from the stack
+        """
+    
 class NotInStackError(Exception):
     def __init__(self, widget):
         self.widget = widget
