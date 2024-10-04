@@ -1,3 +1,4 @@
+from typing import Tuple
 import customtkinter as ctk
 
 class App(ctk.CTk):
@@ -146,3 +147,9 @@ class CustomLabel(ctk.CTkLabel):
     def update_wraplength(self, event = None):
         self.update_idletasks()
         self.configure(wraplength=self.master.winfo_width() - self.wrap_padding * ctk.ScalingTracker.get_widget_scaling(self))
+
+
+class CCTKApplication(ctk.CTk, ctk.CTkFrame):
+    def __init__(self, fg_color: str | Tuple[str, str] | None = None, **kwargs):
+        super().__init__(fg_color, **kwargs)
+        
