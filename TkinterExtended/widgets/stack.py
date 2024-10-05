@@ -114,13 +114,16 @@ class Stack(STACKBASE):
         """
         gets the size of the stack.
         """
-        pass
+        return len(self.children_list)
 
     def is_widget_in_stack(self, widget) -> bool:
         """
         checks if a widget is in the stack.
         """
-        pass
+        for child in self.children_list:
+            if child["widget"] == widget:
+                return True
+        return False
 
     def get_stack_state(self) -> int:
         """
@@ -138,4 +141,15 @@ class Stack(STACKBASE):
         """
         removes all widgets from the stack
         """
+        for child in self.children_list:
+            self.remove_widget(child["widget"])
     
+    def show_next(self):
+        """
+        Shows the next widget in the stack by index
+        """
+
+    def show_previous(self):
+        """
+        Shows the previous widget in the stack by index.
+        """
