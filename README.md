@@ -1,1 +1,1 @@
-# CustomCustomTkinter
+# Tkinter extended

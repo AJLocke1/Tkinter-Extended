@@ -1,3 +1,5 @@
+from TkinterExtended.exceptions import WidgetAlreadyInStackError, NotInStackError, DuplicateNameError
+
 try:
     import customtkinter as ctk
     STACKBASE = ctk.CTkFrame
@@ -57,7 +59,7 @@ class Stack(STACKBASE):
                         self.visible_child = None
             else:
                 raise NotInStackError(widget)
-        else:
+        if isinstance(widget_or_identifier, str):
             name = widget_or_identifier
             if any(child["name"] == name for child in self.children_list):
                 for child in self.children_list:
@@ -137,24 +139,3 @@ class Stack(STACKBASE):
         removes all widgets from the stack
         """
     
-class NotInStackError(Exception):
-    def __init__(self, widget):
-        self.widget = widget
-        self.message = f"Widget: {widget} is not appart of the stack"
-    def __str__(self):
-        return self.message
-    
-class DuplicateNameError(Exception):
-    def __init__(self, widget, name):
-        self.widget = widget
-        self.name = name
-        self.message = f"Widget in stack: {widget} already has the name {name}. please choose a unique name"
-    def __str__(self):
-        return self.message
-    
-class WidgetAlreadyInStackError(Exception):
-    def __init__(self, widget):
-        self.widget = widget
-        self.message = f"Widget: {widget} is already appart of the stack"
-    def __str__(self):
-        return self.message
