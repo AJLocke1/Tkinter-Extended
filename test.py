@@ -6,7 +6,6 @@ class App(ctk.CTk):
         super().__init__(*args, **kwargs)
 
         self.title("App")    
-        self.geometry("200x200") 
 
         self.title_label = ctk.CTkLabel(self, text= "Test Application")
         self.title_label.grid(row = 0, column = 0)

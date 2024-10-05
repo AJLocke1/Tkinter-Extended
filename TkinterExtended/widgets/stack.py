@@ -131,25 +131,43 @@ class Stack(STACKBASE):
         allows user to save the state of the stack.
         """
 
-    def load_stack_state(self, int):
+    def load_stack_state(self, int) -> None:
         """
         sets the widget with the given index to be visible.
         allows the user to load a saved state of the stack.
         """
 
-    def clear_stack(self):
+    def clear_stack(self) -> None:
         """
         removes all widgets from the stack
         """
         for child in self.children_list:
             self.remove_widget(child["widget"])
     
-    def show_next(self):
+    def show_next(self) -> None:
         """
         Shows the next widget in the stack by index
         """
 
-    def show_previous(self):
+    def show_previous(self) -> None:
         """
         Shows the previous widget in the stack by index.
         """
+
+    def _remove_widget_by_object(self, widget):
+        pass
+
+    def _remove_widget_by_name(self, name):
+        pass
+
+    def _remove_widget_by_index(self, index):
+        pass
+
+    def _set_visible_child_by_object(self, widget):
+        pass
+
+    def _set_visible_child_by_name(self, name):
+        pass
+
+    def _set_visible_child_by_index(self, index):
+        pass
