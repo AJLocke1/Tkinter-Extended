@@ -111,14 +111,16 @@ class Stack(STACKBASE):
         """
         removes all widgets from the stack
         """
-        for child in self.children_list:
+        for child in self.children_list.copy():
             self.remove_widget(child["widget"])
     
     def show_next(self) -> None:
         """
         Shows the next widget in the stack by index
         """
-        current_index = self.children_list.index(self.visible_child)
+        for child in self.children_list:
+            if child["widget"] == self.visible_child:
+                current_index = self.children_list.index(child)
         if current_index < len(self.children_list) -1:
             self._set_visible_child_by_index(current_index+1)
         else:
@@ -128,7 +130,9 @@ class Stack(STACKBASE):
         """
         Shows the previous widget in the stack by index.
         """
-        current_index = self.children_list.index(self.visible_child)
+        for child in self.children_list:
+            if child["widget"] == self.visible_child:
+                current_index = self.children_list.index(child)
         if current_index > 0:
             self._set_visible_child_by_index(current_index-1)
         else:
@@ -136,8 +140,11 @@ class Stack(STACKBASE):
 
     def _remove_widget_by_object(self, widget):
         if any(child["widget"] == widget for child in self.children_list):
-            widget.grid_forget()
-            self.children_list.remove(widget)
+            for child in self.children_list:
+                if child["widget"] == widget:
+                    widget = child["widget"]
+                    widget.grid_forget()
+                    self.children_list.remove(child)
 
             if widget == self.visible_child:
                 if self.children_list:
@@ -153,7 +160,7 @@ class Stack(STACKBASE):
                 if child["name"] == name:
                     widget = child["widget"]
                     widget.grid_forget()
-                    self.children_list.remove(widget)
+                    self.children_list.remove(child)
 
                     if widget == self.visible_child:
                         if self.children_list:
@@ -161,12 +168,12 @@ class Stack(STACKBASE):
                         else:
                             self.visible_child = None
         else:
-            raise NotInStackError(widget)
+            raise NotInStackError(name)
 
     def _remove_widget_by_index(self, index):
         child = self.children_list[index]
         widget = child["widget"]
-        self.children_list.remove(widget)
+        self.children_list.remove(child)
 
         if widget == self.visible_child:
             if self.children_list:

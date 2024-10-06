@@ -21,16 +21,11 @@ class App(ctk.CTk):
         self.stack.add_widget(self.page3, "page3")
         self.stack.add_widget(self.page2, "page2", 1)
 
-        print(self.stack.children_list)
+        self.previous_button = ctk.CTkButton(self, text="previous", command=lambda: self.stack.show_previous())
+        self.previous_button.grid(row=2, column=0)
 
-        self.page1_button = ctk.CTkButton(self, text="page 1", command=lambda: self.stack.set_visible_child(self.page1))
-        self.page1_button.grid(row=2, column=0)
-
-        self.page2_button = ctk.CTkButton(self, text="page 2", command=lambda: self.stack.set_visible_child("page2"))
-        self.page2_button.grid(row=2, column=1)
-
-        self.page3_button = ctk.CTkButton(self, text="page 3", command=lambda: self.stack.set_visible_child("page3"))
-        self.page3_button.grid(row=2, column=2)
+        self.next_button = ctk.CTkButton(self, text="next", command=lambda: self.stack.show_next())
+        self.next_button.grid(row=2, column=1)
 
 if __name__ == "__main__":
     app = App()
