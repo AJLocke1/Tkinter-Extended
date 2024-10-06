@@ -18,6 +18,7 @@ class App(ctk.CTk):
 
         self.stack.add_callback_function("add_widget", self.print_widget_added)
         self.stack.add_callback_function("change_visible_widget", self.print_change_visible_widget)
+        self.times_called = 0
 
         self.page1 = ctk.CTkFrame(self.stack, fg_color="blue")
         self.page2 = ctk.CTkFrame(self.stack, fg_color="green")
@@ -35,9 +36,17 @@ class App(ctk.CTk):
 
     def print_widget_added(self, widget):
         print("added")
+        self.check_times_called()
 
     def print_change_visible_widget(self, widget):
         print("changed visible widget")
+        self.check_times_called()
+
+    def check_times_called(self):
+        self.times_called +=1
+        if self.times_called > 10:
+            self.stack.remove_callback_function("add_widget",self.print_widget_added)
+            self.stack.remove_callback_function("change_visible_widget",self.print_change_visible_widget)
 
 if __name__ == "__main__":
     app = App()

@@ -449,19 +449,19 @@ class Stack(STACKBASE):
         """
         match event:
             case "add_widget":
-                for callback in self._on_add_widget_callbacks:
+                for callback in set(self._on_add_widget_callbacks): #copying the set prevents modification while executing.
                     try:
                         callback(**kwargs)
                     except TypeError:
                         callback()
             case "remove_widget":
-                for callback in self._on_remove_widget_callbacks:
+                for callback in set(self._on_remove_widget_callbacks):
                     try:
                         callback(**kwargs)
                     except TypeError:
                         callback()
             case "change_visible_widget":
-                for callback in self._on_change_visible_widget_callbacks:
+                for callback in set(self._on_change_visible_widget_callbacks):
                     try:
                         callback(**kwargs)
                     except TypeError:
