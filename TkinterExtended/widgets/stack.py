@@ -20,12 +20,18 @@ class Stack(STACKBASE):
     Attributes:
         children_list (array): an array of all the widgets in the stack.
         visible_child (Widget): the widget component of the child currently visible.
+        children_expandable (bool): if the widgets in the stack can expand.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, children_expandable = False, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.children_list = []
         self.visible_child = None
+        self.children_expandable = children_expandable
+
+        if self.children_expandable:
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_columnconfigure(0, weight=1)
 
     def add_widget(self, widget: BASECLASS, name: str | None = None, index: int | None = None) -> None: # type: ignore
         """
@@ -238,7 +244,13 @@ class Stack(STACKBASE):
 
         Args:
             index (int): the index of the widget to remove.
+
+        Raises:
+            IndexError: index out of range.
         """
+        if index < 0 or index > len(self.children_list)-1:
+            raise IndexError(f"Index {index} is out of range.")
+    
         child = self.children_list[index]
         widget = child["widget"]
         self.children_list.remove(child)
@@ -296,7 +308,13 @@ class Stack(STACKBASE):
 
         Args:
             index (int): the index of the widget in the stack
+
+        Raises:
+            IndexError: index out of range.
         """
+        if (index < 0 or index > len(self.children_list)-1) and index != -1:
+            raise IndexError(f"Index {index} is out of range.")
+        
         child = self.children_list[index]
 
         if self.visible_child:
