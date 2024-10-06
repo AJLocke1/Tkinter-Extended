@@ -13,6 +13,7 @@ class Stack(STACKBASE):
     """
     A stack wiget based on the c++ gtkmm4 widget of the same name.
     This widgetis ideal for setting up multi page applications.
+    The widget automatically takes the colour of the widget beneath it.
 
     Args:
         STACKBASE (Frame): A container widget
@@ -23,7 +24,7 @@ class Stack(STACKBASE):
         children_expandable (bool): if the widgets in the stack can expand.
     """
     def __init__(self, *args, children_expandable = False, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, bg_color = "transparent", fg_color = "transparent", **kwargs)
 
         self.children_list = []
         self.visible_child = None
@@ -33,18 +34,22 @@ class Stack(STACKBASE):
             self.grid_rowconfigure(0, weight=1)
             self.grid_columnconfigure(0, weight=1)
 
-    def add_widget(self, widget: BASECLASS, name: str | None = None, index: int | None = None) -> None: # type: ignore
+    def add_widget(self, widget: BASECLASS, name: str | None = None, index: int | None = None, expandable: bool | None = None) -> None: # type: ignore
         """
         Based on the arguments provided it calls the necessary private add method to add a widget to the stack.
 
         Args:
             widget (BASECLASS): Any tkinter widget to add to the stack
             name (str | None, optional): An optional identifier for the widget. Defaults to None.
-            index (int | None, optional): An optional index to add the widget to a certain point in the stack. Defaults to None.
+            index (int | None, optional): An optional index to add the widget to a certain point in 
+                the stack. Defaults to None.
+            expandable(bool | None, optional): An optional bool to allow a widget to expand or not, 
+                defaults to the children_expandable attribute of the stack.
 
         Raises:
             WidgetAlreadyInStackError: Throws an error if the widget being added is already in the stack.
-            DuplicateNameError: Throws an error if the optional identifier being specified is already in use for this stack.
+            DuplicateNameError: Throws an error if the optional identifier being specified is already in use 
+                for this stack.
         """
         for child in self.children_list:
             if child["widget"] == widget:
@@ -57,7 +62,14 @@ class Stack(STACKBASE):
                     name = child["name"]
                     raise DuplicateNameError(widget, name)
 
-        widget.grid(row = 0, column = 0, sticky = "nsew")
+        if expandable is None:
+            expandable = self.children_expandable
+        
+        if expandable:
+            widget.grid(row = 0, column = 0, sticky = "nsew")
+        else:
+            widget.grid(row = 0, column = 0)
+
         widget.grid_remove()
 
         if index is not None:
@@ -70,10 +82,9 @@ class Stack(STACKBASE):
 
     def remove_widget(self, widget_or_identifier: BASECLASS | str | int) -> None: # type: ignore
         """
-        Based on the arguments provided it calls the necessary private remove method to remove a widget to the stack.
-        Valid options are the widget object to be removed, the name of the widget, or the index of the widget in
-        the stack.
-
+            Based on the arguments provided it calls the necessary private remove method to remove a widget to 
+            the stack. Valid options are the widget object to be removed, the name of the widget, or the 
+            index of the widget in the stack.
 
         Args:
             widget_or_identifier (BASECLASS | str | int): any identifier used to remove a widget.
@@ -88,9 +99,10 @@ class Stack(STACKBASE):
             self._remove_widget_by_index(widget_or_identifier)
 
     def set_visible_child(self, widget_or_identifier: BASECLASS | str | int) -> None: # type: ignore
-        """Based on the arguments provided it calls the necessary private set visible method to set a widget to be visible.
-        Valid options are the widget object to be removed, the name of the widget, or the index of the widget in
-        the stack.
+        """
+            Based on the arguments provided it calls the necessary private set visible method to set a widget 
+            to be visible. Valid options are the widget object to be removed, the name of the widget, or the 
+            index of the widget in the stack.
 
         Args:
             widget_or_identifier (BASECLASS | str | int): any identifier used to set the widget as visible.

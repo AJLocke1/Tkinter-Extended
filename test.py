@@ -13,7 +13,7 @@ class App(ctk.CTk):
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.stack = etk.Stack(self, bg_color = "red", children_expandable=True)
+        self.stack = etk.Stack(self, children_expandable=True)
         self.stack.grid(row = 1, column = 0, sticky="nsew")
 
         self.page1 = ctk.CTkFrame(self.stack, fg_color="blue")
@@ -21,7 +21,7 @@ class App(ctk.CTk):
         self.page3 = ctk.CTkButton(self.stack, fg_color="orange",text="page 1", command=lambda: self.stack.set_visible_child(self.page1))
 
         self.stack.add_widget(self.page1, "page1")
-        self.stack.add_widget(self.page3, "page3")
+        self.stack.add_widget(self.page3, "page3", expandable=False)
         self.stack.add_widget(self.page2, "page2", 1)
 
         self.previous_button = ctk.CTkButton(self, text="previous", command=lambda: self.stack.show_previous())
