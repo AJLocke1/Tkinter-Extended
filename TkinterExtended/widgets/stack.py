@@ -13,6 +13,13 @@ class Stack(STACKBASE):
     """
     A stack wiget based on the c++ gtkmm4 widget of the same name.
     This widgetis ideal for setting up multi page applications.
+
+    Args:
+        STACKBASE (Frame): A container widget
+
+    Attributes:
+        children_list (array): an array of all the widgets in the stack.
+        visible_child (Widget): the widget component of the child currently visible.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +29,16 @@ class Stack(STACKBASE):
 
     def add_widget(self, widget: BASECLASS, name: str | None = None, index: int | None = None) -> None: # type: ignore
         """
-        adds a widget to the stack
+        Based on the arguments provided it calls the necessary private add method to add a widget to the stack.
+
+        Args:
+            widget (BASECLASS): Any tkinter widget to add to the stack
+            name (str | None, optional): An optional identifier for the widget. Defaults to None.
+            index (int | None, optional): An optional index to add the widget to a certain point in the stack. Defaults to None.
+
+        Raises:
+            WidgetAlreadyInStackError: Throws an error if the widget being added is already in the stack.
+            DuplicateNameError: Throws an error if the optional identifier being specified is already in use for this stack.
         """
         for child in self.children_list:
             if child["widget"] == widget:
@@ -48,7 +64,13 @@ class Stack(STACKBASE):
 
     def remove_widget(self, widget_or_identifier: BASECLASS | str | int) -> None: # type: ignore
         """
-        removes a widget from the stack
+        Based on the arguments provided it calls the necessary private remove method to remove a widget to the stack.
+        Valid options are the widget object to be removed, the name of the widget, or the index of the widget in
+        the stack.
+
+
+        Args:
+            widget_or_identifier (BASECLASS | str | int): any identifier used to remove a widget.
         """
         if isinstance(widget_or_identifier, BASECLASS):
             self._remove_widget_by_object(widget_or_identifier)
@@ -60,8 +82,12 @@ class Stack(STACKBASE):
             self._remove_widget_by_index(widget_or_identifier)
 
     def set_visible_child(self, widget_or_identifier: BASECLASS | str | int) -> None: # type: ignore
-        """
-        sets visible the widget.
+        """Based on the arguments provided it calls the necessary private set visible method to set a widget to be visible.
+        Valid options are the widget object to be removed, the name of the widget, or the index of the widget in
+        the stack.
+
+        Args:
+            widget_or_identifier (BASECLASS | str | int): any identifier used to set the widget as visible.
         """
         if isinstance(widget_or_identifier, BASECLASS):
             self._set_visible_child_by_object(widget_or_identifier)
@@ -74,19 +100,31 @@ class Stack(STACKBASE):
 
     def get_visible_child(self) -> type(BASECLASS) | None: # type: ignore
         """
-        gets the currently visible widget in the stack.
-        """ 
+        gets the currently visible widget.
+
+        Returns:
+            Widget | none: The currently visible widget.
+        """
         return self.visible_child
     
     def get_stack_size(self) -> int:
         """
         gets the size of the stack.
+
+        Returns:
+            int: the size of the stack.
         """
         return len(self.children_list)
 
-    def is_widget_in_stack(self, widget) -> bool:
+    def is_widget_in_stack(self, widget: BASECLASS) -> bool: # type: ignore
         """
         checks if a widget is in the stack.
+
+        Args:
+            widget (BASECLASS): the widget to check.
+
+        Returns:
+            bool: if the widget is in the stack.
         """
         for child in self.children_list:
             if child["widget"] == widget:
@@ -97,13 +135,19 @@ class Stack(STACKBASE):
         """
         gets the index of the current widget set to be visible.
         allows user to save the state of the stack.
+
+        Returns:
+            int: the index of the currently visible widget.
         """
         return self.children_list.index(self.visible_child)
 
-    def load_stack_state(self, index) -> None:
+    def load_stack_state(self, index: int) -> None:
         """
         sets the widget with the given index to be visible.
         allows the user to load a saved state of the stack.
+
+        Args:
+            index (int): the index of the widget to set visible.
         """
         self._set_visible_child_by_index(index)
 
@@ -138,7 +182,16 @@ class Stack(STACKBASE):
         else:
             self._set_visible_child_by_index(-1)
 
-    def _remove_widget_by_object(self, widget):
+    def _remove_widget_by_object(self, widget: BASECLASS): # type: ignore
+        """
+        the private method for removing a widget by its object.
+
+        Args:
+            widget (BASECLASS): the object to remove.
+
+        Raises:
+            NotInStackError: the widget is not in the stack.
+        """
         if any(child["widget"] == widget for child in self.children_list):
             for child in self.children_list:
                 if child["widget"] == widget:
@@ -154,7 +207,16 @@ class Stack(STACKBASE):
         else:
             raise NotInStackError(widget)
 
-    def _remove_widget_by_name(self, name):
+    def _remove_widget_by_name(self, name: str):
+        """
+        the private method for removing a widget by its name
+
+        Args:
+            name (str): the name of the widget given to the stack
+
+        Raises:
+            NotInStackError: the widget is not in the stack.
+        """
         if any(child["name"] == name for child in self.children_list):
             for child in self.children_list:
                 if child["name"] == name:
@@ -170,7 +232,13 @@ class Stack(STACKBASE):
         else:
             raise NotInStackError(name)
 
-    def _remove_widget_by_index(self, index):
+    def _remove_widget_by_index(self, index: int):
+        """
+        the private method for removing a widget by its index
+
+        Args:
+            index (int): the index of the widget to remove.
+        """
         child = self.children_list[index]
         widget = child["widget"]
         self.children_list.remove(child)
@@ -181,7 +249,16 @@ class Stack(STACKBASE):
             else:
                 self.visible_child = None
 
-    def _set_visible_child_by_object(self, widget):
+    def _set_visible_child_by_object(self, widget: BASECLASS): #type: ignore
+        """
+        the private method for making a widget visible by its object.
+
+        Args:
+            widget (BASECLASS): the object to remove.
+
+        Raises:
+            NotInStackError: The widget is not in the stack.
+        """
         if any(child["widget"] == widget for child in self.children_list):
             if self.visible_child:
                 self.visible_child.grid_remove()
@@ -191,7 +268,16 @@ class Stack(STACKBASE):
         else:
             raise NotInStackError(widget)
 
-    def _set_visible_child_by_name(self, name):
+    def _set_visible_child_by_name(self, name: str):
+        """
+        the private method for making a widget visible by its name
+
+        Args:
+            name (str): the name of the widget given to the stack
+
+        Raises:
+            NotInStackError: The widget is not in the stack.
+        """
         if any(child["name"] == name for child in self.children_list):
             for child in self.children_list:
                 if child["name"] == name:
@@ -204,7 +290,13 @@ class Stack(STACKBASE):
         else:
             raise NotInStackError(widget)
 
-    def _set_visible_child_by_index(self, index):
+    def _set_visible_child_by_index(self, index: int):
+        """
+        the private method for making a widget visible by its index.
+
+        Args:
+            index (int): the index of the widget in the stack
+        """
         child = self.children_list[index]
 
         if self.visible_child:
