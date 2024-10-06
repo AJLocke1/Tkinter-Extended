@@ -28,9 +28,12 @@ class Stack(STACKBASE):
     def __init__(self, *args, children_expandable = False, **kwargs):
         super().__init__(*args, bg_color = "transparent", fg_color = "transparent", **kwargs)
 
-        self.children_list: list = [] #cant be a set as it needs to be ordered.
+        self.children_list: list[dict] = [] #cant be a set as it needs to be ordered.
         self.visible_child: BASECLASS = None # type: ignore
         self.children_expandable: bool = children_expandable
+
+        self.saved_history_length: int = 5
+        self.stack_history: list[Stack] = []
 
         self._on_add_widget_callbacks: set[callable] = set() 
         self._on_remove_widget_callbacks: set[callable] = set()
@@ -463,5 +466,11 @@ class Stack(STACKBASE):
                         callback(**kwargs)
                     except TypeError:
                         callback()
+
+    def replace_widget(self, widget_to_replace, new_widget) -> None:
+        pass
+
+    def undo(self) -> None:
+        pass
 
    
